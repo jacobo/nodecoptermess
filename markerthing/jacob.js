@@ -1,7 +1,7 @@
 var arDrone = require('ar-drone');
 var client  = arDrone.createClient();
 
-var realthing = false;
+var realthing = true;
 
 if(realthing){
   client.takeoff();
@@ -130,21 +130,21 @@ rawStream.on('data', function(buf) {
     }else{
       console.log("x is steady");
     }
-    if(ysum > 10){
-      //positive ysum = go down
-      console.log("going down");
-      if(realthing){
-        client.down(0.1);
-      }
-    }else if(ysum < -10){
-      //negative ysum = go up
-      console.log("going up");
-      if(realthing){
-        client.up(0.1);
-      }
-    }else{
-      console.log("y is steady");
-    }
+    // if(ysum > 10){
+    //   //positive ysum = go down
+    //   console.log("going down");
+    //   if(realthing){
+    //     client.down(0.1);
+    //   }
+    // }else if(ysum < -10){
+    //   //negative ysum = go up
+    //   console.log("going up");
+    //   if(realthing){
+    //     client.up(0.1);
+    //   }
+    // }else{
+    //   console.log("y is steady");
+    // }
   }
 
 });
