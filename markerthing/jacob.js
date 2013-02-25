@@ -1,7 +1,7 @@
 var arDrone = require('ar-drone');
 var client  = arDrone.createClient();
 
-var rawStream = arDrone.createRawStream({frameRate:5});
+var rawStream = arDrone.createRawStream({frameRate:1});
 
 var dataThing = null;
 
@@ -22,100 +22,59 @@ rawStream.on('data', function(buf) {
   // }
   var i = 0;
   var m = '';
-  // var upperleft = 0;
-  // var upperright = 0;
-  // var lowerleft = 0;
-  // var lowerright = 0;
 
   var rav = 0;
   var gav = 0;
   var bav = 0;
 
-  // var rgrid = [[]];
-  var ggrid = [];
-  // var bgrid = [[]];
+  var rgrid = [[]];
+  var ggrid = [[]];
+  var bgrid = [[]];
+
+  var initifempty = function(arr, y, x){
+    if(!arr[y]){
+      arr[y] = [];
+    }
+    if(!arr[y][x]){
+      arr[y][x] = 0;
+    }
+    // console.log(arr);
+  }
 
   for (var y = 0; y < 360; y++) {
-    var ywhich = y / 10;
+    var ywhich = Math.floor(y / 10);
     for (var x = 0; x < 640; x++) {
-      var xwhich = x / 10;
+      var xwhich = Math.floor(x / 10);
 
       var rgot = buf[i+0];
       var ggot = buf[i+1];
       var bgot = buf[i+2];
 
-      // if(!rgrid[ywhich]){
-      //   rgrid[ywhich] = [];
-      // }
-      if(!ggrid[ywhich]){
-        ggrid[ywhich] = [];
-      }
-      if(!ggrid[ywhich][xwhich]){
-        ggrid[ywhich][xwhich] = 0;
-      }
-      // if(!bgrid[ywhich]){
-      //   bgrid[ywhich] = [];
-      // }
+      initifempty(rgrid, ywhich, xwhich);
+      initifempty(ggrid, ywhich, xwhich);
+      initifempty(bgrid, ywhich, xwhich);
 
-      // console.log(ggrid);
 
-      // rgrid[ywhich][xwhich] = rgrid[ywhich][xwhich] + rgot;
+      rgrid[ywhich][xwhich] = rgrid[ywhich][xwhich] + rgot;
       ggrid[ywhich][xwhich] = ggrid[ywhich][xwhich] + ggot;
-      // bgrid[ywhich][xwhich] = bgrid[ywhich][xwhich] + bgot;
-      // rav = rav + rgot;
-      // gav = gav + ggot;
-      // bav = bav + bgot;
-
-      // if((x % 10 == 0) && (y % 10 == 0)){
-      //   // var r = rav / 
-      //   // var g =
-      //   // var b =
-      //   // get the r,g,b values of every pixel
-      //   // var total = r + g + b;
-      // 
-      //   // console.log("rgb");
-      //   // console.log(r);
-      //   // console.log(g);
-      //   // console.log(b);
-      // 
-      //   // if(r > g && r > b){
-      //   //   m += "R";
-      //   // }
-      //   // else if(g > b && g > r){
-      //   //   m += "G";
-      //   // }
-      //   // else if(b > g && b > r){
-      //   //   m += "B";
-      //   // } else {
-      //   //   m += "O";
-      //   // }
-      //   if(g > 200 && r < 200 && b < 200){
-      //     m += "X"
-      //   }else if(g > 100 && r < 100 && b < 100){
-      //     m += "."
-      //   }else{
-      //     m += " "
-      //   }
-      // }
+      bgrid[ywhich][xwhich] = bgrid[ywhich][xwhich] + bgot;
 
       i += 3;
     }
-    // if(y % 10 == 0){
-    //   m += "\n";
-    // }
   }
 
   for (var y = 0; y < 36; y++) {
     for (var x = 0; x < 64; x++) {
-      var val = ggrid[y][x];
-      console.log(val);
-      // if(val > 100){
-      //   m += "X";
-      // }else{
-      //   m += " ";
-      // }
+      var val = ggrid[y][x] / 100;
+      if(val > 150){
+        m += "X";
+      }else if(val > 75){
+        m += ".";
+      }else{
+        m += " ";
+      }
     }
-    // m += "\n";
+    m += "\n";
   }
 
   console.log(m);
