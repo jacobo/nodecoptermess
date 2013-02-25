@@ -4,6 +4,7 @@ var client  = arDrone.createClient();
 var realthing = true;
 
 if(realthing){
+  console.log("takeoff");
   client.takeoff();
 }
 
@@ -12,13 +13,19 @@ var rawStream = arDrone.createRawStream({frameRate:1});
 //We can use spawn("speak") to have the computer say things when the copter reacts to things
 
 var frameCount = 0;
-var vidF = 1;
-var moveF = 1;
+var vidF = 3;
+var moveF = 3;
+var momentum = null;
 rawStream.on('data', function(buf) {
   if(frameCount == 0){
     console.log("got first buffer");
   }
   frameCount++;
+  if(frameCount < 6){
+    console.log("wait");
+    client.up(0.2);
+    return;
+  }
 
   var i = 0;
 
@@ -120,15 +127,27 @@ rawStream.on('data', function(buf) {
       console.log("going right");
       if(realthing){
         client.right(0.1);
+        momentum = "right";
       }
     }else if(xsum < -10){
       //negative xsum = go left
       console.log("going left");
       if(realthing){
         client.left(0.1);
+        momentum = "left";
       }
     }else{
       console.log("x is steady");
+      client.stop();
+      // if(momentum == "left"){
+      //   // console.log("equalize by going right");
+      //   // client.right(0.1);
+      //   momentum = null;
+      // }else if(momentum == "right"){
+      //   // console.log("equalize by going left");
+      //   // client.left(0.1);
+      //   momentum = null;
+      // }
     }
     // if(ysum > 10){
     //   //positive ysum = go down
