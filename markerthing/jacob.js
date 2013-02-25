@@ -65,14 +65,31 @@ rawStream.on('data', function(buf) {
 
   for (var y = 0; y < 36; y++) {
     for (var x = 0; x < 64; x++) {
-      var val = ggrid[y][x] / 100;
-      if(val > 150){
-        m += "X";
-      }else if(val > 75){
-        m += ".";
+      var r = rgrid[y][x] / 100;
+      var g = ggrid[y][x] / 100;
+      var b = bgrid[y][x] / 100;
+      var t = (r + g + b);
+      if(t > 50){ //} && g > (r + 15) && g > (b + 15)){
+        m += Math.floor(t / 78);
       }else{
         m += " ";
       }
+      // if (g > 125 && r < 150 && b < 150){
+      //   m += "X";
+      // }else if (g > 100 && r < 150 && b < 150){
+      //   m += "x";
+      // }else if (g > 75 && r < 150 && b < 150){
+      //   m += ".";
+      // }else{
+      //   m += " ";
+      // }
+      // if(val > 150){
+      //   m += "X";
+      // }else if(val > 75){
+      //   m += ".";
+      // }else{
+      //   m += " ";
+      // }
     }
     m += "\n";
   }
