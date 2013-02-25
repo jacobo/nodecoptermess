@@ -1,25 +1,25 @@
 var arDrone = require('ar-drone');
 var client  = arDrone.createClient();
 
-var rawStream = arDrone.createRawStream({frameRate:1});
+var realthing = false;
 
-var dataThing = null;
+if(realthing){
+  client.takeoff();
+}
+
+var rawStream = arDrone.createRawStream({frameRate:1});
 
 //We can use spawn("speak") to have the computer say things when the copter reacts to things
 
+var frameCount = 0;
+var vidF = 1;
+var moveF = 1;
 rawStream.on('data', function(buf) {
-  console.log("got buffer");
-  // if(!dataThing){
-  //   // dataThing = rawBuffer;
-  //   // console.log(dataThing);
-  //   // client.createRepl();
-  //   for (var y = 0; y < 360; y++) {
-  //     for (var x = 0; x < 640; x++) {
-  //       var r = buf[i+0];
-  //      var g = buf[i+1];
-  //      var b = buf[i+2];
-  //      
-  // }
+  if(frameCount == 0){
+    console.log("got first buffer");
+  }
+  frameCount++;
+
   var i = 0;
 
   var rav = 0;
@@ -37,7 +37,6 @@ rawStream.on('data', function(buf) {
     if(!arr[y][x]){
       arr[y][x] = 0;
     }
-    // console.log(arr);
   }
 
   for (var y = 0; y < 360; y++) {
@@ -63,8 +62,12 @@ rawStream.on('data', function(buf) {
   }
 
   var callback = function(x, y, t){
-    drawthing(x, y, t);
-    movedrone(x, y, t);
+    if(frameCount % vidF == 0){
+      drawthing(x, y, t);
+    }
+    if(frameCount % moveF == 0){
+      movedrone(x, y, t);
+    }
   }
 
   var m = '';
@@ -106,33 +109,42 @@ rawStream.on('data', function(buf) {
     }
   }
 
-  //positive xsum = go right
-  //negative xsum = go left
-  //positive ysum = go down
-  //negative ysum = go up
+  if(frameCount % vidF == 0){
+    console.log(m);
+    console.log("xsum: " + xsum + " ysum " + ysum);
+  }
 
-  console.log(m);
-  console.log("xsum: " + xsum + " ysum " + ysum);
-
-  // for (var y = 0; y < yMax; y++) {
-  //   var m = '';
-  //   for (var x = 0; x < xMax; x++) {
-  //     var s = 0;
-  //     var c = 0;
-  //     for (var yi = 0; yi < h; yi++) {
-  //       for (var xi = 0; xi < w; xi++) {
-  //         var i = ((y*h+yi)*640 + (x*w+xi))*3;
-  //         s += buf[i];
-  //         c++;
-  //       }
-  //     }
-  //     s = Math.round(20*s/(255*c));
-  //     if (s > 5) s = 5;
-  //     m += " .-+O#".charAt(s);
-  //   }
-  //   console.log(m);
-  // }
-
-
+  if(frameCount % moveF == 0){
+    if(xsum > 10){
+      //positive xsum = go right
+      console.log("going right");
+      if(realthing){
+        client.right(0.1);
+      }
+    }else if(xsum < -10){
+      //negative xsum = go left
+      console.log("going left");
+      if(realthing){
+        client.left(0.1);
+      }
+    }else{
+      console.log("x is steady");
+    }
+    if(ysum > 10){
+      //positive ysum = go down
+      console.log("going down");
+      if(realthing){
+        client.down(0.1);
+      }
+    }else if(ysum < -10){
+      //negative ysum = go up
+      console.log("going up");
+      if(realthing){
+        client.up(0.1);
+      }
+    }else{
+      console.log("y is steady");
+    }
+  }
 
 });
