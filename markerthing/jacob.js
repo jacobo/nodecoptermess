@@ -21,7 +21,6 @@ rawStream.on('data', function(buf) {
   //      
   // }
   var i = 0;
-  var m = '';
 
   var rav = 0;
   var gav = 0;
@@ -63,38 +62,57 @@ rawStream.on('data', function(buf) {
     }
   }
 
+  var callback = function(x, y, t){
+    drawthing(x, y, t);
+    movedrone(x, y, t);
+  }
+
+  var m = '';
+  var drawthing = function(x, y, t){
+    if(t < 2){
+      m += t;
+    }else{
+      m += " ";
+    }
+    if(x == 0){
+      m += "\n";
+    }
+  }
+
+  var xsum = 0;
+  var ysum = 0;
+  var movedrone = function(x, y, t){
+    if(t < 2){
+      if(y < 18){
+        ysum--;
+      }else{
+        ysum++;
+      }
+      if(x < 32){
+        xsum --;
+      }else{
+        xsum ++;
+      }
+    }
+  }
+
   for (var y = 0; y < 36; y++) {
     for (var x = 0; x < 64; x++) {
       var r = rgrid[y][x] / 100;
       var g = ggrid[y][x] / 100;
       var b = bgrid[y][x] / 100;
-      var t = (r + g + b);
-      if(t > 50){ //} && g > (r + 15) && g > (b + 15)){
-        m += Math.floor(t / 78);
-      }else{
-        m += " ";
-      }
-      // if (g > 125 && r < 150 && b < 150){
-      //   m += "X";
-      // }else if (g > 100 && r < 150 && b < 150){
-      //   m += "x";
-      // }else if (g > 75 && r < 150 && b < 150){
-      //   m += ".";
-      // }else{
-      //   m += " ";
-      // }
-      // if(val > 150){
-      //   m += "X";
-      // }else if(val > 75){
-      //   m += ".";
-      // }else{
-      //   m += " ";
-      // }
+      var t = Math.floor((r + g + b) / 78);
+      callback(x, y, t);
     }
-    m += "\n";
   }
 
+  //positive xsum = go right
+  //negative xsum = go left
+  //positive ysum = go down
+  //negative ysum = go up
+
   console.log(m);
+  console.log("xsum: " + xsum + " ysum " + ysum);
 
   // for (var y = 0; y < yMax; y++) {
   //   var m = '';
