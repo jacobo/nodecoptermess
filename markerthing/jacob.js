@@ -22,6 +22,7 @@ var timesFound = 0;
 var rgrid = [[]];
 var ggrid = [[]];
 var bgrid = [[]];
+var holdCount = 0;
 
 rawStream.on('data', function(buf) {
   if(frameCount == 0){
@@ -72,12 +73,14 @@ rawStream.on('data', function(buf) {
     }
   }
 
+  var matchedcount = 0;
   var xval = 0;
   var xstrength = 0;
   var yval = 0;
   var ystrength = 0;
   var movedrone = function(x, y, t){
     if(t > 2){
+      matchedcount++;
       if(t > xstrength){
         xstrength = t;
         xval = x;
@@ -123,20 +126,32 @@ rawStream.on('data', function(buf) {
     console.log("xval: " + xval + " yval " + yval);
 
     if(xval > xThreshold){
+      holdCount = 0;
       console.log("go right");
       client.right(0.1);
+      // client.counterClockwise(0.1);
     }else if(xval < -xThreshold){
+      holdCount = 0;
       console.log("go left");
       client.left(0.1);
+      // client.clockwise(0.1);
     }else if(yval > yThreshold){
+      holdCount = 0;
       console.log("go down");
       client.down(0.1);
     }else if(yval < -yThreshold){
+      holdCount = 0;
       console.log("go up");
       client.up(0.1);
     }else{
-      console.log("hold");
+      console.log("hold " + holdCount);
       client.stop();
+      if(matchedcount == 0){
+        holdCount++;
+      }
+    }
+    if(holdCount > 5){
+      client.land();
     }
 
   }
