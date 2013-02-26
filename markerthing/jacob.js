@@ -1,9 +1,11 @@
 var arDrone = require('ar-drone');
 var client  = arDrone.createClient();
+var spawn       = require('child_process').spawn;
 
-var realthing = true;
+var realthing = false;
 
 if(realthing){
+  spawn("say", ["WARNING WARNING WARNING"]);
   console.log("takeoff");
   client.takeoff();
 }
@@ -125,23 +127,32 @@ rawStream.on('data', function(buf) {
     console.log(m);
     console.log("xval: " + xval + " yval " + yval);
 
-    if(xval > xThreshold){
+    if(matchedcount > 15){
+      holdCount = 0;
+      console.log("TOO CLOSE");
+      spawn("say", ["Back that ass up"]);
+      client.back(0.1);
+    }else if(xval > xThreshold){
       holdCount = 0;
       console.log("go right");
+      spawn("say", ["Going Right"]);
       client.right(0.1);
       // client.counterClockwise(0.1);
     }else if(xval < -xThreshold){
       holdCount = 0;
       console.log("go left");
+      spawn("say", ["Going Left"]);
       client.left(0.1);
       // client.clockwise(0.1);
     }else if(yval > yThreshold){
       holdCount = 0;
       console.log("go down");
+      spawn("say", ["Going Down"]);
       client.down(0.1);
     }else if(yval < -yThreshold){
       holdCount = 0;
       console.log("go up");
+      spawn("say", ["Going Up"]);
       client.up(0.1);
     }else{
       console.log("hold " + holdCount);
