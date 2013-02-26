@@ -2,7 +2,7 @@ var arDrone = require('ar-drone');
 var client  = arDrone.createClient();
 var spawn       = require('child_process').spawn;
 
-var realthing = false;
+var realthing = true;
 
 if(realthing){
   spawn("say", ["WARNING WARNING WARNING"]);
@@ -31,9 +31,9 @@ rawStream.on('data', function(buf) {
     console.log("got first buffer");
   }
   frameCount++;
-  if(frameCount < 6){
+  if(frameCount < 16){
     console.log("wait");
-    client.up(0.1);
+    client.up(0.2);
     return;
   }
 
